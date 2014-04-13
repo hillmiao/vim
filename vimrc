@@ -54,6 +54,8 @@ endif
 "mkdir -p ~/.vim/colors && cd ~/.vim/colors
 "wget -O wombat256mod.vim http://www.vim.org/scripts/download_script.php?src_id=13400
 "
+"git clone git://github.com/Lokaltog/vim-powerline.git  
+"
 " Source a global configuration file if available
 if filereadable("/etc/vim/vimrc.local")
   source /etc/vim/vimrc.local
