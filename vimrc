@@ -47,6 +47,13 @@ endif
 "set hidden		" Hide buffers when they are abandoned
 "set mouse=a		" Enable mouse usage (all modes)
 
+
+"mkdir -p ~/.vim/autoload ~/.vim/bundle; \
+"curl -Sso ~/.vim/autoload/pathogen.vim \
+"    https://raw.github.com/tpope/vim-pathogen/master/autoload/pathogen.vim
+"mkdir -p ~/.vim/colors && cd ~/.vim/colors
+"wget -O wombat256mod.vim http://www.vim.org/scripts/download_script.php?src_id=13400
+"
 " Source a global configuration file if available
 if filereadable("/etc/vim/vimrc.local")
   source /etc/vim/vimrc.local
