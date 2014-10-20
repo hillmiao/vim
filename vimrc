@@ -1,141 +1,220 @@
-" All system-wide defaults are set in $VIMRUNTIME/debian.vim and sourced by
-" the call to :runtime you can find below.  If you wish to change any of those
-" settings, you should do it in this file (/etc/vim/vimrc), since debian.vim
-" will be overwritten everytime an upgrade of the vim packages is performed.
-" It is recommended to make changes after sourcing debian.vim since it alters
-" the value of the 'compatible' option.
+" Sample .vimrc file by Martin Brochhaus
+" Presented at PyCon APAC 2012
 
-" This line should not be removed as it ensures that various options are
-" properly set to work with the Vim-related packages available in Debian.
-runtime! debian.vim
 
-" Uncomment the next line to make Vim more Vi-compatible
-" NOTE: debian.vim sets 'nocompatible'.  Setting 'compatible' changes numerous
-" options, so any other options should be set AFTER setting 'compatible'.
-"set compatible
+" ============================================
+" Note to myself:
+" DO NOT USE <C-z> FOR SAVING WHEN PRESENTING!
+" ============================================
+" F5 run python in VIM
+function CheckPythonSyntax()
+    let mp = &makeprg
+    let ef = &errorformat
+    let exeFile = expand("%:t")
+    setlocal makeprg=python\ -u
+    set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
+    silent make %
+    copen
+    let &makeprg     = mp
+    let &errorformat = ef
+endfunctio
+map <F5> :call CheckPythonSyntax()<CR>
 
-" Vim5 and later versions support syntax highlighting. Uncommenting the next
-" line enables syntax highlighting by default.
-if has("syntax")
-  syntax on
+" fixed jedi error
+set encoding=utf-8
+set fileencodings=utf-8,chinese,latin-1
+if has("win32")
+set fileencoding=chinese
+else
+set fileencoding=utf-8
 endif
+" menu encode
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
+" console encode
+language messages zh_CN.utf-8
 
-" If using a dark background within the editing area and syntax highlighting
-" turn on this option as well
-"set background=dark
-
-" Uncomment the following to have Vim jump to the last position when
-" reopening a file
-"if has("autocmd")
-"  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-"endif
-
-" Uncomment the following to have Vim load indentation rules and plugins
-" according to the detected filetype.
-"if has("autocmd")
-"  filetype plugin indent on
-"endif
-
-" The following are commented out as they cause vim to behave a lot
-" differently from regular Vi. They are highly recommended though.
-"set showcmd		" Show (partial) command in status line.
-"set showmatch		" Show matching brackets.
-"set ignorecase		" Do case insensitive matching
-"set smartcase		" Do smart case matching
-"set incsearch		" Incremental search
-"set autowrite		" Automatically save before commands like :next and :make
-"set hidden		" Hide buffers when they are abandoned
-"set mouse=a		" Enable mouse usage (all modes)
+" Automatic reloading of .vimrc
+autocmd! bufwritepost .vimrc source %
+colorscheme darkblue
 
 
-"mkdir -p ~/.vim/autoload ~/.vim/bundle; \
-"curl -Sso ~/.vim/autoload/pathogen.vim \
-"    https://raw.github.com/tpope/vim-pathogen/master/autoload/pathogen.vim
-"mkdir -p ~/.vim/colors && cd ~/.vim/colors
-"wget -O wombat256mod.vim http://www.vim.org/scripts/download_script.php?src_id=13400
-"
-"git clone git://github.com/Lokaltog/vim-powerline.git  
-"
-" Source a global configuration file if available
-if filereadable("/etc/vim/vimrc.local")
-  source /etc/vim/vimrc.local
-endif
+" Better copy & paste
+" When you want to paste large blocks of code into vim, press F2 before you
+" paste. At the bottom you should see ``-- INSERT (paste) --``.
 
-execute pathogen#infect()
-filetype off
-call pathogen#helptags()
+set pastetoggle=<F2>
+set clipboard=unnamed
 
-set foldmethod=indent
-set foldlevel=99
+" Mouse and backspace
+set mouse=a  " on OSX press ALT and click
+set bs=2     " make backspace behave like normal again
 
+
+" Rebind <Leader> key
+" I like to have it here becuase it is easier to reach than the default and
+" it is next to ``m`` and ``n`` which I use for navigating between tabs.
 let mapleader = ","
+
+
+" Bind nohl
+" Removes highlight of your last search
+" ``<C>`` stands for ``CTRL`` and therefore ``<C-n>`` stands for ``CTRL+n``
+noremap <C-n> :nohl<CR>
+vnoremap <C-n> :nohl<CR>
+inoremap <C-n> :nohl<CR>
+
+
+" Quicksave command
+"" noremap <C-Z> :update<CR>
+"" vnoremap <C-Z> <C-C>:update<CR>
+"" inoremap <C-Z> <C-O>:update<CR>
+
+
+" Quick quit command
+"" noremap <Leader>e :quit<CR>  " Quit current window
+"" noremap <Leader>E :qa!<CR>   " Quit all windows
+
+
+" bind Ctrl+<movement> keys to move around the windows, instead of using Ctrl+w + <movement>
+" Every unnecessary keystroke that can be saved is good for your health :)
 map <c-j> <c-w>j
 map <c-k> <c-w>k
 map <c-l> <c-w>l
 map <c-h> <c-w>h
-map <Leader>t :NERDTreeToggle<CR>
+
+
+" easier moving between tabs
 map <Leader>n <esc>:tabprevious<CR>
 map <Leader>m <esc>:tabnext<CR>
 
 
-autocmd! bufwritepost .vimrc source %
-vnoremap < <gv " better indentation
-vnoremap > >gv " better indentation
-set t_Co=256
-color wombat256mod
-
-set laststatus=2
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
-set shiftround
-set expandtab
-set number
-set tw=79
-set nowrap
-set fo-=t
-set colorcolumn=80
-highlight ColorColumn ctermbg=233
-set hlsearch
-set incsearch
-set ignorecase
-set smartcase
-set nobackup
-set nowritebackup
-set noswapfile
+" map sort function to a key
+vnoremap <Leader>s :sort ui<CR>
 
 
-autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
-au InsertLeave * match ExtraWhitespace /\s\+$/
+" easier moving of code blocks
+" Try to go into visual mode (v), thenselect several lines of code here and
+" then press ``>`` several times.
+vnoremap < <gv  " better indentation
+vnoremap > >gv  " better indentation
 
+
+" Show whitespace
+" MUST be inserted BEFORE the colorscheme command
+"" autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+"" au InsertLeave * match ExtraWhitespace /\s\+$/
+
+
+" Color scheme
+" mkdir -p ~/.vim/colors && cd ~/.vim/colors
+" wget -O wombat256mod.vim http://www.vim.org/scripts/download_script.php?src_id=13400
+" set t_Co=256
+" color wombat256mod
+
+
+" Enable syntax highlighting
+" You need to reload this file for the change to apply
 filetype off
 filetype plugin indent on
 syntax on
 
 
-let g:pep8_map='<leader>8'
+" Showing line numbers and length
+set number  " show line numbers
+set tw=79   " width of document (used by gd)
+set nowrap  " don't automatically wrap on load
+set fo-=t   " don't automatically wrap text when typing
+set colorcolumn=80
+highlight ColorColumn ctermbg=233
+
+
+" easier formatting of paragraphs
+"" vmap Q gq
+"" nmap Q gqap
+
+
+" Useful settings
+set history=700
+set undolevels=700
+
+
+" Real programmers don't use TABs but spaces
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set shiftround
+
+
+" Make search case insensitive
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+
+
+" Disable stupid backup and swap files - they trigger too many events
+" for file system watchers
+set nobackup
+set nowritebackup
+set noswapfile
+
+
+" Setup Pathogen to manage your plugins
+" mkdir -p ~/.vim/autoload ~/.vim/bundle
+" curl -so ~/.vim/autoload/pathogen.vim https://raw.github.com/tpope/vim-pathogen/HEAD/autoload/pathogen.vim
+" Now you can install any plugin into a .vim/bundle/plugin-name/ folder
+call pathogen#infect()
+
+
+
+" ============================================================================
+" Python IDE Setup
+" ============================================================================
+
+
+" Settings for vim-powerline
+" cd ~/.vim/bundle
+" git clone git://github.com/Lokaltog/vim-powerline.git
+set laststatus=2
+
 
 " Settings for ctrlp
-" " cd ~/.vim/bundle
-" " git clone https://github.com/kien/ctrlp.vim.git
+" cd ~/.vim/bundle
+" git clone https://github.com/kien/ctrlp.vim.git
 let g:ctrlp_max_height = 30
 set wildignore+=*.pyc
 set wildignore+=*_build/*
 set wildignore+=*/coverage/*
 
 
+" Settings for python-mode
+" Note: I'm no longer using this. Leave this commented out
+" and uncomment the part about jedi-vim instead
+" cd ~/.vim/bundle
+" git clone https://github.com/klen/python-mode
+"" map <Leader>g :call RopeGotoDefinition()<CR>
+"" let ropevim_enable_shortcuts = 1
+"" let g:pymode_rope_goto_def_newwin = "vnew"
+"" let g:pymode_rope_extended_complete = 1
+"" let g:pymode_breakpoint = 0
+"" let g:pymode_syntax = 1
+"" let g:pymode_syntax_builtin_objs = 0
+"" let g:pymode_syntax_builtin_funcs = 0
+"" map <Leader>b Oimport ipdb; ipdb.set_trace() # BREAKPOINT<C-c>
+
 " Settings for jedi-vim
-" " cd ~/.vim/bundle
-" " git clone git://github.com/davidhalter/jedi-vim.git
-"let g:jedi#related_names_command = "<leader>z"
+" cd ~/.vim/bundle
+" git clone git://github.com/davidhalter/jedi-vim.git
 let g:jedi#usages_command = "<leader>z"
 let g:jedi#popup_on_dot = 0
 let g:jedi#popup_select_first = 0
+let g:jedi#completions_command = "<leader>,"
+
 map <Leader>b Oimport ipdb; ipdb.set_trace() # BREAKPOINT<C-c>
 
-"vigating through omnicomplete option list
-" See
-" http://stackoverflow.com/questions/2170023/how-to-map-keys-for-popup-menu-in-vim
+" Better navigating through omnicomplete option list
+" See http://stackoverflow.com/questions/2170023/how-to-map-keys-for-popup-menu-in-vim
 set completeopt=longest,menuone
 function! OmniPopup(action)
     if pumvisible()
@@ -147,14 +226,13 @@ function! OmniPopup(action)
     endif
     return a:action
 endfunction
-"
-"
-"
+
 inoremap <silent><C-j> <C-R>=OmniPopup('j')<CR>
 inoremap <silent><C-k> <C-R>=OmniPopup('k')<CR>
-" " Python folding
-" " mkdir -p ~/.vim/ftplugin
-" " wget -O ~/.vim/ftplugin/python_editing.vim
-" http://www.vim.org/scripts/download_script.php?src_id=5492
+
+
+" Python folding
+" mkdir -p ~/.vim/ftplugin
+" wget -O ~/.vim/ftplugin/python_editing.vim http://www.vim.org/scripts/download_script.php?src_id=5492
 set nofoldenable
 
