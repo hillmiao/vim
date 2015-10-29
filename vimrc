@@ -257,5 +257,24 @@ nnoremap <Leader>f :NERDTreeToggle<CR>
 nmap <Leader>t :TagbarToggle<CR>
 
 " Settings for YCM
+"" vim upgrade
+" sudo apt-get install software-properties-common
+" sudo apt-get install python-software-properties
+" sudo add-apt-repository ppa:fcwu-tw/ppa
+" sudo apt-get update
+" sudo apt-get install vim
+" 
+" sudo apt-get install build-essential cmake
+" ./install.py
+
+"" cmake upgrade
+" cd ~/Downloads/
+" wget http://www.cmake.org/files/v2.8/cmake-2.8.11.tar.gz
+" tar xzvf cmake-2.8.11.tar.gz
+" cd cmake-2.8.11
+" ./configure
+" make -j4
+" sudo make install
+
 nmap <Leader>d :YcmCompleter GoToDefinitionElseDeclaration <C-R>=expand("<cword>")<CR><CR>
 let g:ycm_min_num_of_chars_for_completion=1
